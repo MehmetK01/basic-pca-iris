@@ -1,0 +1,47 @@
+---
+title: "Iris PCA analysis"
+author: "Mehmet"
+date: "2024-11-12"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## R Markdown
+
+## Short application of PCA to the famoous Iris data set:
+
+```{r}
+    iris_pc <- prcomp(iris[, 1:4])
+    library(ggplot2)
+    ggplot(data = data.frame(iris_pc$x), aes(x=PC1, y=PC2)) + 
+        geom_point(color=c("chartreuse4", "darkorange", "deepskyblue")[iris$Species], size = 3)
+
+```
+One may be interested in plotting all pair-wise direction to see if lower PC’s provide useful information.
+
+```{r}
+pairs(iris_pc$x, col=c("chartreuse4", "darkorange", "deepskyblue")[iris$Species], pch = 19)
+```
+
+However, usually, the lower PC’s are less informative. This can also be speculated from the eigenvalue plot, which shows how influential each PC is.
+
+```{r}
+plot(iris_pc, type = "l", pch = 19, main = "Iris PCA Variance")
+```
+
+Feature contributions to the PC can be accessed through the magnitude of the loadings. This table shows that Petal.Length is the most influential variable on the first PC, with loading ≈0.8567.
+
+```{r}
+iris_pc$rotation
+```
+
+We can further visualize this on a plot. This can be helpful when the number of variables is large.
+
+```{r}
+features = row.names(iris_pc$rotation)
+ggplot(data = data.frame(iris_pc$rotation), aes(x=PC1, y=PC2, label=features,color=features)) + 
+        geom_point(size = 3) + geom_text(size=3)
+```
